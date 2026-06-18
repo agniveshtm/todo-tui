@@ -14,10 +14,10 @@ A feature-rich, keyboard-driven **Terminal User Interface (TUI)** todo applicati
 - **Task Persistence** – All tasks are stored in `~/.todo-tui/todo.db` with creation and completion timestamps.
 - **Quit Confirmation** – Prompts for confirmation before exiting.
 - **Help Screen** – View all keybindings and usage instructions.
-- **Settings Screen** – Toggle preferences (e.g. completion sound on/off). Settings persist across app restarts.
+- **Settings Screen** – Toggle preferences (e.g. completion sound on/off) and switch between themes. Settings persist across app restarts.
 - **Home Navigation** – Return to the Welcome screen from anywhere.
 - **Keyboard-Driven UI** – Full keyboard navigation without needing a mouse.
-- **Dark Theme** – A consistent `textual-dark` theme throughout the app.
+- **Theme Changer** – Switch between built-in themes (e.g. `textual-dark`, `textual-light`) from Settings. Theme preference persists across restarts.
 - **Sound Feedback** – A bell sound plays when a task is marked complete (Windows only).
 
 ## Screenshots
@@ -36,7 +36,7 @@ The core task management view with two panels: **Available** tasks on the left a
 
 ### Settings Screen
 
-Configure app preferences such as toggling the completion sound on/off. Settings persist across restarts.
+Configure app preferences: toggle the completion sound on/off and switch between themes. Settings persist across restarts.
 
 ![Settings Screen](src/todo_tui/assets/Settings%20Screen%20(Screenshot).png)
 
@@ -101,7 +101,7 @@ Welcome Screen
 |------------------|-------------|
 | **Welcome**      | Landing page with the app title and **Get Started** button |
 | **Todo**         | Main task management interface with Available / Completed panels and an input bar |
-| **Settings**     | Configure app preferences (e.g. toggle completion sound on/off) |
+| **Settings**     | Configure app preferences (toggle completion sound, switch theme) |
 | **Help**         | Displays all keybindings and usage instructions (markdown) |
 | **Quit**         | Modal dialog asking "Are you sure you want to quit?" |
 | **Delete**       | Modal dialog asking "Are you sure you want to delete this task?" |
