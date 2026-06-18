@@ -391,7 +391,7 @@ Switch:focus {
 
 /* Custom switch design (the one used in SettingsScreen) */
 #custom-design {
-    background: darkslategrey;
+    background: $primary-darken-2;
 }
 
 /* Track */

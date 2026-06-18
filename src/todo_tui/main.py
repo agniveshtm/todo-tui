@@ -7,7 +7,7 @@ from textual.binding import Binding
 from textual.containers import Center, Horizontal, Vertical, VerticalScroll, Grid
 from textual.reactive import reactive
 from textual.screen import Screen
-from textual.widgets import Button, Checkbox, Footer, Header, Input, Label, Markdown, Static, Switch
+from textual.widgets import Button, Checkbox, Footer, Header, Input, Label, Markdown, Switch, Select
 
 PACKAGE = files("todo_tui")
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -60,7 +60,6 @@ class TodoApp(App):
         )
         self.conn.commit()
         self.load_settings()
-        self.theme = "textual-dark"
         self.push_screen(WelcomeScreen())
 
     def load_settings(self):
@@ -69,11 +68,23 @@ class TodoApp(App):
             self.sound_enabled = row[0] == "1"
         else:
             self.sound_enabled = True
+        row = self.conn.execute("SELECT VALUE FROM SETTINGS WHERE KEY = ?", ("theme",)).fetchone()
+        if row is not None:
+            self.theme = row[0]
+        else:
+            self.theme = "textual-dark"
 
     def save_sound_setting(self, value: bool):
         self.conn.execute(
             "INSERT OR REPLACE INTO SETTINGS (KEY, VALUE) VALUES (?, ?)",
             ("sound_enabled", "1" if value else "0"),
+        )
+        self.conn.commit()
+
+    def save_theme_setting(self, value: str):
+        self.conn.execute(
+            "INSERT OR REPLACE INTO SETTINGS (KEY, VALUE) VALUES (?, ?)",
+            ("theme", value),
         )
         self.conn.commit()
 
@@ -101,7 +112,6 @@ class TodoApp(App):
 #=====================================================Welcome-Screen==========================================================#
 class WelcomeScreen(Screen):
     def on_mount(self):
-        self.theme = "textual-dark"
         self.query_one("#welcome_card").border_title = "Welcome"
 
     def compose(self):
@@ -136,7 +146,6 @@ class TodoScreen(Screen):
         return self.todo_app.conn
 
     def on_mount(self):
-        self.theme = "textual-dark"
         available_list = self.query_one("#available_tasks_list")
         completed_list = self.query_one("#completed_tasks_list")
         for row in self.conn.execute("SELECT ID, TASK FROM TASKS WHERE DONE = 0 ORDER BY CREATED_AT"):
@@ -301,7 +310,6 @@ class HelpScreen(Screen):
 #========================================================Quit-Screen==========================================================#
 class QuitScreen(Screen):
     def on_mount(self):
-        self.theme = "textual-dark"
         self.query_one("#dialog").border_title = "Quit"
 
     def compose(self):
@@ -321,7 +329,6 @@ class QuitScreen(Screen):
 #========================================================Delete-Screen========================================================#
 class DeleteScreen(Screen):
     def on_mount(self):
-        self.theme = "textual-dark"
         self.query_one("#dialog").border_title = "Delete Task"
 
     def compose(self):
@@ -349,7 +356,6 @@ class DeleteAllScreen(Screen):
         self.is_completed = is_completed
 
     def on_mount(self):
-        self.theme = "textual-dark"
         container = self.query_one("#batch_dialog")
         container.border_title = "Delete All Tasks"
         # Populate task checkboxes
@@ -410,11 +416,12 @@ class SettingsScreen(Screen):
     BINDINGS = [Binding(key="escape", action="app.pop_screen", description="Back")]
 
     def on_mount(self):
-        self.theme = "textual-dark"
         self.query_one("#settings").border_title = "Settings"
         self.query_one("#custom-design", Switch).value = cast(TodoApp, self.app).sound_enabled
 
     def compose(self):
+        themes = [(name,name) for name in self.app.available_themes]
+        current = cast(TodoApp,self.app).theme
         yield Header(show_clock=True)
         yield Vertical(
             Label("Settings", id="settings_title"),
@@ -422,6 +429,11 @@ class SettingsScreen(Screen):
                 Label("Play Completion Sound", classes="label"),
                 Switch(value=True, animate=True, id="custom-design"),
                 classes="container",
+            ),
+            Horizontal(
+                Label("Change Themes",classes="label"),
+                Select(options=themes,value=current,id="theme-select"),
+                classes="container"
             ),
             id="settings"
         )
@@ -431,6 +443,12 @@ class SettingsScreen(Screen):
         app = cast(TodoApp, self.app)
         app.sound_enabled = event.value
         app.save_sound_setting(event.value)
+
+    def on_select_changed(self, event: Select.Changed):
+        if event.value and event.value is not Select.BLANK:
+            app = cast(TodoApp, self.app)
+            app.theme = str(event.value)
+            app.save_theme_setting(str(event.value))
 
 def main():
     app = TodoApp()
