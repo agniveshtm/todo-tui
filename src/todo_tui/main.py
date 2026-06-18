@@ -2,7 +2,6 @@ import sqlite3, winsound
 from importlib.resources import files
 from pathlib import Path
 from typing import cast
-from textual import on
 from textual.app import App
 from textual.binding import Binding
 from textual.containers import Center, Horizontal, Vertical, VerticalScroll, Grid
