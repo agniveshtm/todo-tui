@@ -234,7 +234,7 @@ uv run todo-tui
 5. Remove individual tasks with **Delete** (confirmation required) or Delete All with **Ctrl+d**
 6. Filter tasks with **Ctrl+f** using fuzzy search; press **Esc** to clear
 7. Open Settings to adjust preferences
-7. View the help screen anytime for keybindings
+8. View the help screen anytime for keybindings
 8. Quit and confirm to exit the application
 
 ## Project Links
