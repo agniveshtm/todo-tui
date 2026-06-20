@@ -235,7 +235,7 @@ uv run todo-tui
 6. Filter tasks with **Ctrl+f** using fuzzy search; press **Esc** to clear
 7. Open Settings to adjust preferences
 8. View the help screen anytime for keybindings
-8. Quit and confirm to exit the application
+9. Quit and confirm to exit the application
 
 ## Project Links
 
