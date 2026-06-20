@@ -9,9 +9,10 @@
 | `h` | Go to Welcome / Home screen |
 | `s` | Open Settings screen |
 | `?` | Show this help screen |
-| `esc` | Go back / dismiss the current screen (e.g. help, settings, dialogs) |
 | `Delete` | Delete the focused task (with confirmation) |
 | `Ctrl+d` | Delete All — open multi-select modal for the focused task list (Available / Completed) |
+| `Ctrl+f` | Open fuzzy search bar to filter tasks in both Available and Completed lists |
+| `Esc` | Go back / dismiss the current screen, or close the search bar and clear the filter |
 | `Tab` / `Shift+Tab` | Move focus between widgets |
 | `Enter` | Add a task from the input box |
 | `Space` | Check / Uncheck a task |
@@ -45,6 +46,12 @@
 - Use the **Select All** checkbox to toggle all tasks, or check individual tasks
 - Click **Delete All** to remove all selected tasks, or **Cancel** to abort
 
+### Fuzzy Search
+- Press **Ctrl+f** to open the search bar at the top of the Todo screen
+- Type a query to instantly filter both the Available and Completed task lists using fuzzy matching
+- Only tasks matching the query are shown; non-matching tasks are hidden
+- Press **Esc** or **Ctrl+f** again to dismiss the search and restore all tasks
+
 ### Navigation
 - Press `h` from any screen to return to the Welcome screen
 - Press `s` to open the Settings screen
@@ -66,7 +73,7 @@
 | Screen | Description |
 |--------|-------------|
 | **Welcome** | Landing page with title and **Get Started** button |
-| **Todo** | Main task management interface with two lists and an input box |
+| **Todo** | Main task management interface with two lists, input box, and fuzzy search |
 | **Settings** | Configure app preferences (e.g. toggle completion sound on/off) |
 | **Help** | This screen — keybindings and usage instructions |
 | **Quit** | Modal dialog confirming intent to exit the application |

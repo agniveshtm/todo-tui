@@ -160,6 +160,18 @@ TodoScreen > Vertical {
 
 /* ── Input section ─────────────────────────*/
 
+#fuzzy_search_input {
+    border: round $accent;
+    margin-bottom: 0;
+    background: $surface;
+    padding: 0 2;
+    display: none;
+}
+
+#fuzzy_search_input:focus {
+    border: round $accent;
+}
+
 TodoScreen Input {
     border: round $primary-darken-2;
     margin-top: 0;

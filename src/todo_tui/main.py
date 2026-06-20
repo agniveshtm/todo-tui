@@ -4,10 +4,12 @@ from pathlib import Path
 from typing import cast
 from textual.app import App
 from textual.binding import Binding
+from textual.fuzzy import FuzzySearch
 from textual.containers import Center, Horizontal, Vertical, VerticalScroll, Grid
 from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widgets import Button, Checkbox, Footer, Header, Input, Label, Markdown, Switch, Select
+from textual.css.query import NoMatches
 
 PACKAGE = files("todo_tui")
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -135,7 +137,11 @@ class TodoScreen(Screen):
     BINDINGS = [
         Binding(key="delete", action="delete_task", description="Delete Task"),
         Binding(key="ctrl+d", action="batch_delete", description="Delete All"),
+        Binding(key="ctrl+f", action="fuzzy", description="Search"),
+        Binding(key="escape", action="dismiss_search", description="Clear Search"),
     ]
+
+    _fuzzy_engine = FuzzySearch()
 
     @property
     def todo_app(self):
@@ -154,10 +160,16 @@ class TodoScreen(Screen):
             completed_list.mount(Checkbox(row[1], value=True, id=f"task_{row[0]}"))
         self.update_titles()
         self.query_one("#available_tasks_list").focus()
+        try:
+            search_input = self.query_one("#fuzzy_search_input", Input)
+            search_input.display = False
+        except NoMatches:
+            pass
 
     def compose(self):
         yield Header(show_clock=True)
         yield Vertical(
+            Input(placeholder="🔎 Search tasks...", type="text", id="fuzzy_search_input"),
             Horizontal(
                 VerticalScroll(id="available_tasks_list", classes="tasks-list"),
                 VerticalScroll(id="completed_tasks_list", classes="tasks-list"),
@@ -175,7 +187,48 @@ class TodoScreen(Screen):
         available_list.border_title = f"Available ({todo_count})"
         completed_list.border_title = f"Completed ({completed_count})"
 
+    def action_fuzzy(self):
+        search_input = self.query_one("#fuzzy_search_input", Input)
+        if search_input.display:
+            self._clear_fuzzy_search()
+        else:
+            search_input.display = True
+            search_input.focus()
+
+    def action_dismiss_search(self):
+        search_input = self.query_one("#fuzzy_search_input", Input)
+        if search_input.display:
+            self._clear_fuzzy_search()
+
+    def _clear_fuzzy_search(self):
+        search_input = self.query_one("#fuzzy_search_input", Input)
+        search_input.value = ""
+        search_input.display = False
+        available_list = self.query_one("#available_tasks_list")
+        completed_list = self.query_one("#completed_tasks_list")
+        for checkbox in list(available_list.query(Checkbox)) + list(completed_list.query(Checkbox)):
+            checkbox.display = True
+        self.query_one("#available_tasks_list").focus()
+
+    def on_input_changed(self, event: Input.Changed):
+        if event.input.id != "fuzzy_search_input":
+            return
+        query = event.value.strip()
+        available_list = self.query_one("#available_tasks_list")
+        completed_list = self.query_one("#completed_tasks_list")
+        all_checkboxes = list(available_list.query(Checkbox)) + list(completed_list.query(Checkbox))
+        if not query:
+            for checkbox in all_checkboxes:
+                checkbox.display = True
+            return
+        for checkbox in all_checkboxes:
+            label = str(checkbox.label)
+            score, _ = self._fuzzy_engine.match(query, label)
+            checkbox.display = score > 0
+
     def on_input_submitted(self, event):
+        if event.input.id == "fuzzy_search_input":
+            return
         task = event.value.strip()
         if task:
             cursor = self.conn.execute("INSERT INTO TASKS (TASK) VALUES (?)", (task,))
