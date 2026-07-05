@@ -498,7 +498,7 @@ class SettingsScreen(Screen):
         app.save_sound_setting(event.value)
 
     def on_select_changed(self, event: Select.Changed):
-        if event.value and event.value is not Select.BLANK:
+        if event.value is not Select.NULL and event.value is not Select.BLANK:
             app = cast(TodoApp, self.app)
             app.theme = str(event.value)
             app.save_theme_setting(str(event.value))
