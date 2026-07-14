@@ -16,6 +16,7 @@ A feature-rich, keyboard-driven **Terminal User Interface (TUI)** todo applicati
 - **Quit Confirmation** – Prompts for confirmation before exiting.
 - **Help Screen** – View all keybindings and usage instructions.
 - **Settings Screen** – Toggle preferences (e.g. completion sound on/off) and switch between themes. Settings persist across app restarts.
+- **Export Tasks** – Export your tasks to CSV or JSON from Settings. Use **Export** to save to the default exports folder, or **Export to** to choose a custom location via file dialog.
 - **Home Navigation** – Return to the Welcome screen from anywhere.
 - **Keyboard-Driven UI** – Full keyboard navigation without needing a mouse.
 - **Theme Changer** – Switch between built-in themes (e.g. `textual-dark`, `textual-light`) from Settings. Theme preference persists across restarts.
@@ -37,7 +38,7 @@ The core task management view with two panels: **Available** tasks on the left a
 
 ### Settings Screen
 
-Configure app preferences: toggle the completion sound on/off and switch between themes. Settings persist across restarts.
+Configure app preferences: toggle the completion sound on/off, switch between themes, and export tasks to CSV or JSON. The **Export** button saves to the default exports folder, while **Export to** opens a file dialog to choose a custom save location.
 
 ![Settings Screen](src/todo_tui/assets/Settings%20Screen%20(Screenshot).png)
 
@@ -103,7 +104,7 @@ Welcome Screen
 |------------------|-------------|
 | **Welcome**      | Landing page with the app title and **Get Started** button |
 | **Todo**         | Main task management interface with Available / Completed panels, input bar, and fuzzy search |
-| **Settings**     | Configure app preferences (toggle completion sound, switch theme) |
+| **Settings**     | Configure app preferences (toggle completion sound, switch theme, export tasks to CSV/JSON with custom save location) |
 | **Help**         | Displays all keybindings and usage instructions (markdown) |
 | **Quit**         | Modal dialog asking "Are you sure you want to quit?" |
 | **Delete**       | Modal dialog asking "Are you sure you want to delete this task?" |
@@ -233,7 +234,7 @@ uv run todo-tui
 4. Navigate checkboxes and toggle task completion
 5. Remove individual tasks with **Delete** (confirmation required) or Delete All with **Ctrl+d**
 6. Filter tasks with **Ctrl+f** using fuzzy search; press **Esc** to clear
-7. Open Settings to adjust preferences
+7. Open Settings to adjust preferences and export tasks
 8. View the help screen anytime for keybindings
 9. Quit and confirm to exit the application
 

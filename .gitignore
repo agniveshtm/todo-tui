@@ -7,8 +7,14 @@ wheels/
 *.egg-info
 *.spec
 
+# Mimocode Harness:
+.mimocode/
+
 # Database
 db/
+
+# Exports
+exports/
 
 # Test Cache
 .pytest_cache/

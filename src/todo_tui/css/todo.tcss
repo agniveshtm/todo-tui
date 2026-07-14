@@ -356,8 +356,9 @@ SettingsScreen {
 #settings {
     align: center top;
     width: 100%;
+    max-width: 80;
     height: auto;
-    padding: 2 4;
+    padding: 1 3;
     margin-top: 1;
     border: round $primary;
     border-title-color: $primary;
@@ -367,37 +368,59 @@ SettingsScreen {
 
 #settings_title {
     text-align: center;
-    text-style: bold;
+    text-style: bold reverse;
     color: $primary;
     width: 100%;
-    margin-bottom: 2;
+    margin-bottom: 1;
     content-align: center middle;
-    border-bottom: solid $primary-darken-1;
-    padding-bottom: 1;
+    padding: 0 2;
 }
 
 .container {
     height: auto;
-    width: auto;
-    margin: 1 0;
-    padding: 1 2;
+    width: 100%;
+    margin: 0;
+    padding: 0 2;
+    background: $surface-lighten-1;
+    border: tall transparent;
+}
+
+.container:hover {
+    background: $primary 8%;
 }
 
 .label {
-    height: 3;
+    height: auto;
     content-align: center middle;
-    width: auto;
+    width: 16;
     color: $text;
-    margin-right: 2;
+    margin-right: 1;
+    text-style: bold;
 }
 
-Switch {
+SettingsScreen Switch {
     height: auto;
     width: auto;
 }
 
+SettingsScreen Select {
+    width: 25;
+}
+
+SettingsScreen Button {
+    min-width: 10;
+    margin-left: 1;
+}
+
+#export-btn, #export-as-btn {
+    width: auto;
+    height: 3;
+    padding: 0 1;
+    border: none;
+}
+
 /* Keep focus readable without overriding the ON-state indicator */
-Switch:focus {
+SettingsScreen Switch:focus {
     background: $accent 10%;
 }
 
