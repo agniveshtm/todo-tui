@@ -57,7 +57,7 @@ jobs:
 
       - name: Convert logo to ICO
         run: |
-          uv run python -c "from PIL import Image; img = Image.open('src/todo_tui/assets/logo.png'); img.save('logo.ico', format='ICO', sizes=[(256,256),(128,128),(64,64),(48,48),(32,32),(16,16)])"
+          uv run python -c "from PIL import Image; img = Image.open('src/todo_tui/assets/logo.png'); img.save('src/todo_tui/assets/logo.ico', format='ICO', sizes=[(256,256),(128,128),(64,64),(48,48),(32,32),(16,16)])"
 
       - name: Build exe
         run: uv run pyinstaller todo_tui.spec
