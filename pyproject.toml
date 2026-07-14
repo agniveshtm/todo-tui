@@ -30,4 +30,6 @@ dev = [
     "pytest>=9.0.3",
     "pytest-benchmark>=5.2.3",
     "textual-dev>=1.8.0",
+    "pyinstaller>=6.0",
+    "pillow>=10.0",
 ]

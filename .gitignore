@@ -6,6 +6,8 @@ dist/
 wheels/
 *.egg-info
 *.spec
+!todo_tui.spec
+*.ico
 
 # Mimocode Harness:
 .mimocode/

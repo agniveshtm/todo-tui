@@ -72,6 +72,7 @@ todo-tui/
 ├── tests/
 │   └── test_benchmark.py
 ├── pyproject.toml                   # Project metadata and build configuration (uv)
+├── todo_tui.spec                    # PyInstaller spec for building Windows exe
 ├── uv.lock                          # Lock file for uv package manager
 ├── .gitignore
 ├── LICENSE
@@ -199,6 +200,11 @@ todo-tui
 pip install git+https://github.com/agniveshtm/TODO-TUI.git
 todo-tui
 ```
+
+### Install via Executable (.exe)
+
+1. Download `todo-tui.exe` from [Releases](https://github.com/agniveshtm/TODO-TUI/releases)
+2. Run `todo-tui.exe` directly — no Python installation required
 
 ### Install via Wheel
 

@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-package:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,3 +39,31 @@ jobs:
           files: |
             dist/*.whl
             dist/*.tar.gz
+
+  build-exe:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install 3.14
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Convert logo to ICO
+        run: |
+          uv run python -c "from PIL import Image; img = Image.open('src/todo_tui/assets/logo.png'); img.save('logo.ico', format='ICO', sizes=[(256,256),(128,128),(64,64),(48,48),(32,32),(16,16)])"
+
+      - name: Build exe
+        run: uv run pyinstaller todo_tui.spec
+
+      - name: Upload exe to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: dist/todo-tui.exe
