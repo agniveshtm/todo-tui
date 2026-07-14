@@ -6,9 +6,17 @@ dist/
 wheels/
 *.egg-info
 *.spec
+!todo_tui.spec
+*.ico
+
+# Mimocode Harness:
+.mimocode/
 
 # Database
 db/
+
+# Exports
+exports/
 
 # Test Cache
 .pytest_cache/

@@ -1,6 +1,7 @@
-import sqlite3, winsound
+import sqlite3, winsound,json,csv
 from importlib.resources import files
 from pathlib import Path
+from datetime import datetime
 from typing import cast
 from textual.app import App
 from textual.binding import Binding
@@ -14,9 +15,10 @@ from textual.css.query import NoMatches
 PACKAGE = files("todo_tui")
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if (PROJECT_ROOT / ".git").exists():
-    DB_PATH = PROJECT_ROOT / "db" / "todo.db"
+    BASE_DIR = PROJECT_ROOT
 else:
-    DB_PATH = Path.home() / ".todo-tui" / "todo.db"
+    BASE_DIR = Path.home() / ".todo-tui"
+DB_PATH = BASE_DIR / "db" / "todo.db"
 
 #=======================================================Todo-App==============================================================#
 class TodoApp(App):
@@ -89,6 +91,58 @@ class TodoApp(App):
             ("theme", value),
         )
         self.conn.commit()
+
+    def export_tasks(self, format_type: str):
+        tasks = self.conn.execute(
+            "SELECT ID, TASK, DONE, CREATED_AT, COMPLETED_AT FROM TASKS ORDER BY CREATED_AT"
+        ).fetchall()
+
+        if not tasks:
+            return None
+        export_dir = BASE_DIR / "exports"
+        export_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        if format_type == "csv":
+            file_path = export_dir / f"tasks_export_{timestamp}.csv"
+            with open(file_path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow(["ID", "Task", "Done", "Created At", "Completed At"])
+                for task in tasks:
+                    writer.writerow([task[0], task[1], "Yes" if task[2] else "No", task[3], task[4] or ""])
+        else:  # json
+            file_path = export_dir / f"tasks_export_{timestamp}.json"
+            task_list = []
+            for task in tasks:
+                task_list.append({
+                    "id": task[0],
+                    "task": task[1],
+                    "done": bool(task[2]),
+                    "created_at": task[3],
+                    "completed_at": task[4]
+                })
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(task_list, f, indent=2, ensure_ascii=False)
+
+        return file_path
+
+    def export_tasks_to_path(self, format_type: str, file_path: Path) -> Path | None:
+        tasks = self.conn.execute(
+            "SELECT ID, TASK, DONE, CREATED_AT, COMPLETED_AT FROM TASKS ORDER BY CREATED_AT"
+        ).fetchall()
+        if not tasks:
+            return None
+        if format_type == "csv":
+            with open(file_path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow(["ID", "Task", "Done", "Created At", "Completed At"])
+                for task in tasks:
+                    writer.writerow([task[0], task[1], "Yes" if task[2] else "No", task[3], task[4] or ""])
+        else:
+            task_list = [{"id": t[0], "task": t[1], "done": bool(t[2]), "created_at": t[3], "completed_at": t[4]} for t in tasks]
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(task_list, f, indent=2, ensure_ascii=False)
+        return file_path
 
     def action_home(self):
         self.push_screen(WelcomeScreen())
@@ -470,10 +524,13 @@ class SettingsScreen(Screen):
 
     def on_mount(self):
         self.query_one("#settings").border_title = "Settings"
+        self._initializing = True
         self.query_one("#custom-design", Switch).value = cast(TodoApp, self.app).sound_enabled
+        self._initializing = False
 
     def compose(self):
         themes = [(name,name) for name in self.app.available_themes]
+        file_type = [("CSV","csv"),("JSON","json")]
         current = cast(TodoApp,self.app).theme
         yield Header(show_clock=True)
         yield Vertical(
@@ -488,20 +545,98 @@ class SettingsScreen(Screen):
                 Select(options=themes,value=current,id="theme-select"),
                 classes="container"
             ),
+            Horizontal(
+                Label("Export Tasks",classes="label"),
+                Select(options=file_type, id="export-format"),
+                Button("Export", variant="primary", id="export-btn"),
+                Button("Export to", variant="primary", id="export-as-btn"),
+                classes="container",
+            ),
             id="settings"
         )
         yield Footer()
 
     def on_switch_changed(self, event: Switch.Changed):
+        if getattr(self, "_initializing", False):
+            return
         app = cast(TodoApp, self.app)
         app.sound_enabled = event.value
         app.save_sound_setting(event.value)
 
     def on_select_changed(self, event: Select.Changed):
-        if isinstance(event.value, str):
+        if event.select.id == "theme-select" and isinstance(event.value, str):
             app = cast(TodoApp, self.app)
+            if event.value == app.theme:
+                return
             app.theme = str(event.value)
             app.save_theme_setting(str(event.value))
+
+    def on_button_pressed(self, event):
+        if event.button.id == "export-btn":
+            format_select = self.query_one("#export-format", Select)
+            format_type = format_select.value
+            if isinstance(format_type, str):
+                app = cast(TodoApp, self.app)
+                file_path = app.export_tasks(format_type)
+                if file_path:
+                    self.notify(f"Exported to {file_path}", title="Export Complete")
+                else:
+                    self.notify("No tasks to export", title="Export", severity="warning")
+            else:
+                self.notify("Select a file format first", title="Export", severity="warning")
+        elif event.button.id == "export-as-btn":
+            format_select = self.query_one("#export-format", Select)
+            format_type = format_select.value
+            if isinstance(format_type, str):
+                self.run_worker(lambda: self._show_file_dialog(format_type), exclusive=True, group="export_dialog", thread=True)
+            else:
+                self.notify("Select a file format first", title="Export", severity="warning")
+
+    def _show_file_dialog(self, format_type: str):
+        import tkinter as tk
+        from tkinter import filedialog
+
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+
+        initial_dir = str(BASE_DIR / "exports")
+        Path(initial_dir).mkdir(parents=True, exist_ok=True)
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        initial_filename = f"tasks_export_{timestamp}"
+
+        if format_type == "csv":
+            filetypes = [("CSV files", "*.csv"), ("All files", "*.*")]
+            default_ext = ".csv"
+        else:
+            filetypes = [("JSON files", "*.json"), ("All files", "*.*")]
+            default_ext = ".json"
+
+        file_path = filedialog.asksaveasfilename(
+            title="TODO-TUI",
+            initialdir=initial_dir,
+            initialfile=initial_filename,
+            defaultextension=default_ext,
+            filetypes=filetypes,
+        )
+
+        root.destroy()
+
+        if file_path:
+            self.app.call_from_thread(self._on_file_selected, format_type, file_path)
+
+    def _on_file_selected(self, format_type: str, file_path: str):
+        app = cast(TodoApp, self.app)
+        try:
+            result = app.export_tasks_to_path(format_type, Path(file_path))
+        except Exception as e:
+            self.notify(f"Export failed: {e}", title="Error", severity="error")
+            return
+        if result:
+            self.notify(f"Exported to {result}", title="Export Complete")
+        else:
+            self.notify("No tasks to export", title="Export", severity="warning")
 
 def main():
     app = TodoApp()
