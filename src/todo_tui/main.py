@@ -357,8 +357,9 @@ class TodoScreen(Screen):
             if not valid_ids:
                 return
             placeholders = ", ".join(["?"] * len(valid_ids))
-            query = "DELETE FROM TASKS WHERE ID IN (" + placeholders + ")"
-            self.conn.execute(query, tuple(valid_ids))
+            self.conn.execute(
+                f"DELETE FROM TASKS WHERE ID IN ({placeholders})", tuple(valid_ids)
+            )
             self.conn.commit()
             for tid in valid_ids:
                 try:
