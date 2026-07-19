@@ -40,7 +40,7 @@ class TodoApp(App):
         return True
 
     def on_mount(self):
-        DB_PATH.parent.mkdir(exist_ok=True)
+        DB_PATH.parent.mkdir(parents=True, exist_ok=True)
         self.conn = sqlite3.connect(DB_PATH)
         self.bell_path = str(PACKAGE / "assets" / "bell.wav")
         self.conn.execute(
