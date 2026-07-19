@@ -356,10 +356,8 @@ class TodoScreen(Screen):
             valid_ids = [int(tid) for tid in task_ids if tid.isdigit()]
             if not valid_ids:
                 return
-            placeholders = ", ".join(["?"] * len(valid_ids))
-            self.conn.execute(
-                f"DELETE FROM TASKS WHERE ID IN ({placeholders})", tuple(valid_ids)
-            )
+            for tid in valid_ids:
+                self.conn.execute("DELETE FROM TASKS WHERE ID = ?", (tid,))
             self.conn.commit()
             for tid in valid_ids:
                 try:
