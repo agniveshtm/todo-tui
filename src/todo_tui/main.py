@@ -353,15 +353,20 @@ class TodoScreen(Screen):
         def handle_result(task_ids):
             if task_ids is None:
                 return
-            placeholders = ", ".join("?" for _ in task_ids)
-            self.conn.execute(f"DELETE FROM TASKS WHERE ID IN ({placeholders})", tuple(task_ids))
+            valid_ids = [int(tid) for tid in task_ids if tid.isdigit()]
+            if not valid_ids:
+                return
+            for tid in valid_ids:
+                self.conn.execute("DELETE FROM TASKS WHERE ID = ?", (tid,))
             self.conn.commit()
-            for tid in task_ids:
+            for tid in valid_ids:
                 try:
                     cb = self.query_one(f"#task_{tid}")
                     cb.remove()
-                except Exception:
+                except NoMatches:
                     pass
+                except Exception as e:
+                    self.notify(f"Error removing task {tid}: {e}", title="Error", severity="error")
             self.update_titles()
             remaining = list(target_list.query(Checkbox))
             if remaining:
