@@ -52,6 +52,12 @@
 - Only tasks matching the query are shown; non-matching tasks are hidden
 - Press **Esc** or **Ctrl+f** again to dismiss the search and restore all tasks
 
+### Exporting Tasks
+- From the **Settings** screen (`s`), select a file format (**CSV** or **JSON**) from the **Export Tasks** selector
+- Click **Export** to save your tasks with an auto-generated filename to `~/.todo-tui/exports/`
+- Click **Export to…** to open a file dialog and choose a custom save location
+- A notification confirms the export path once complete
+
 ### Navigation
 - Press `h` from any screen to return to the Welcome screen
 - Press `s` to open the Settings screen
@@ -66,6 +72,8 @@
 
 - Press `s` from any screen to open the Settings screen
 - Toggle **Play Completion Sound** to enable/disable the sound effect when marking a task as done
+- Use the **Theme** selector to change the app appearance between available themes
+- Use the **Export Tasks** section to export all tasks in CSV or JSON format
 - Press `esc` to return to the previous screen
 
 ## Screens Overview
@@ -74,7 +82,7 @@
 |--------|-------------|
 | **Welcome** | Landing page with title and **Get Started** button |
 | **Todo** | Main task management interface with two lists, input box, and fuzzy search |
-| **Settings** | Configure app preferences (e.g. toggle completion sound on/off) |
+| **Settings** | Configure app preferences (completion sound, theme) and export tasks to CSV/JSON |
 | **Help** | This screen — keybindings and usage instructions |
 | **Quit** | Modal dialog confirming intent to exit the application |
 | **Delete** | Modal dialog confirming intent to delete a task |
@@ -86,4 +94,5 @@
 - Data is persisted in a local **todo.db** database (`.todo-tui/todo.db`)
 - Tasks are stored with creation and completion timestamps
 - A success sound (`bell.wav`) plays when a task is marked complete (Windows only)
-- Settings (such as the completion sound toggle) are persisted in a **SETTINGS** table inside `todo.db` and survive app restarts
+- Settings (such as the completion sound toggle and theme) are persisted in a **SETTINGS** table inside `todo.db` and survive app restarts
+- Exported tasks are saved to `~/.todo-tui/exports/` by default (or any location with **Export to…**)
