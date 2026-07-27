@@ -326,15 +326,15 @@ class TodoScreen(Screen):
         if focused is None:
             return
         # Check if the focused widget is one of the task-list containers or a descendant
-        available_list = self.query_one("#available_tasks_list")
-        completed_list = self.query_one("#completed_tasks_list")
-        if focused is available_list or focused is completed_list:
+        available_list = self.query_one("#available_tasks_list", VerticalScroll)
+        completed_list = self.query_one("#completed_tasks_list", VerticalScroll)
+        if isinstance(focused, VerticalScroll) and (focused is available_list or focused is completed_list):
             target_list = focused
         else:
             # Check if we're inside a task list container (via ancestors)
             node = focused
             while node is not None:
-                if node is available_list or node is completed_list:
+                if isinstance(node, VerticalScroll) and (node is available_list or node is completed_list):
                     target_list = node
                     break
                 node = node.parent
@@ -401,7 +401,7 @@ class TodoScreen(Screen):
                         cb.remove()
                     except Exception:
                         pass
-                    target_list = self.query_one(target_list_id)
+                    target_list = self.query_one(target_list_id, VerticalScroll)
                     remaining = list(target_list.query(Checkbox))
                     if remaining:
                         remaining[0].focus()
