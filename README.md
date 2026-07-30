@@ -1,44 +1,64 @@
 # TODO-TUI
 
+<!-- markdownlint-disable MD033 -->
 <p align="center">
   <img src="src/todo_tui/assets/logo.png" alt="TODO-TUI Logo" width="200"/>
 </p>
+<!-- markdownlint-enable MD033 -->
 
-A feature-rich, keyboard-driven **Terminal User Interface (TUI)** todo application built with [Textual](https://textual.textualize.io) and [Python](https://python.org). Manage your tasks right from the terminal with a clean, dark-themed interface and full keyboard navigation.
+A feature-rich, keyboard-driven **Terminal User Interface (TUI)** todo application
+built with [Textual](https://textual.textualize.io) and [Python](https://python.org).
+Manage your tasks right from the terminal with a clean, dark-themed interface and
+full keyboard navigation.
 
 ## Features
 
 - **Add Tasks** – Type a task in the input box to add it instantly.
-- **Complete / Un-complete Tasks** – Toggle checkboxes to move tasks to the **Completed** panel with a success sound (Windows).
-- **Delete Tasks** – Individual task deletion with confirmation; delete multiple tasks at once with **Ctrl+d** and Select All (Delete All).
-- **Fuzzy Search** – Press **Ctrl+f** to open the search bar; instantly filter both Available and Completed task lists with fuzzy matching.
-- **Task Persistence** – All tasks are stored in `~/.todo-tui/todo.db` with creation and completion timestamps.
+- **Complete / Un-complete Tasks** – Toggle checkboxes to move tasks to the
+  **Completed** panel with a success sound (Windows).
+- **Delete Tasks** – Individual task deletion with confirmation; delete multiple
+  tasks at once with **Ctrl+d** and Select All (Delete All).
+- **Fuzzy Search** – Press **Ctrl+f** to open the search bar; instantly filter
+  both Available and Completed task lists with fuzzy matching.
+- **Task Persistence** – All tasks are stored in `~/.todo-tui/todo.db` with
+  creation and completion timestamps.
 - **Quit Confirmation** – Prompts for confirmation before exiting.
 - **Help Screen** – View all keybindings and usage instructions.
-- **Settings Screen** – Toggle preferences (e.g. completion sound on/off) and switch between themes. Settings persist across app restarts.
-- **Export Tasks** – Export your tasks to CSV or JSON from Settings. Use **Export** to save to the default exports folder, or **Export to** to choose a custom location via file dialog.
+- **Settings Screen** – Toggle preferences (e.g. completion sound on/off) and
+  switch between themes. Settings persist across app restarts.
+- **Export Tasks** – Export your tasks to CSV or JSON from Settings. Use **Export**
+  to save to the default exports folder, or **Export to** to choose a custom
+  location via file dialog.
 - **Home Navigation** – Return to the Welcome screen from anywhere.
 - **Keyboard-Driven UI** – Full keyboard navigation without needing a mouse.
-- **Theme Changer** – Switch between built-in themes (e.g. `textual-dark`, `textual-light`) from Settings. Theme preference persists across restarts.
-- **Sound Feedback** – A bell sound plays when a task is marked complete (Windows only).
+- **Theme Changer** – Switch between built-in themes (e.g. `textual-dark`,
+  `textual-light`) from Settings. Theme preference persists across restarts.
+- **Sound Feedback** – A bell sound plays when a task is marked complete
+  (Windows only).
 
 ## Screenshots
 
 ### Welcome Screen
 
-The landing page with the app title and a **Get Started** button to enter the main interface.
+The landing page with the app title and a **Get Started** button to enter the
+main interface.
 
 ![Welcome Screen](src/todo_tui/assets/Welcome%20Screen%20(Screenshot).png)
 
 ### Task Area (Main Screen)
 
-The core task management view with two panels: **Available** tasks on the left and **Completed** tasks on the right. An input bar at the bottom lets you add new tasks.
+The core task management view with two panels: **Available** tasks on the left
+and **Completed** tasks on the right. An input bar at the bottom lets you add
+new tasks.
 
 ![Todo Task Area](src/todo_tui/assets/Todo-TaskArea%20(Screenshot).png)
 
 ### Settings Screen
 
-Configure app preferences: toggle the completion sound on/off, switch between themes, and export tasks to CSV or JSON. The **Export** button saves to the default exports folder, while **Export to** opens a file dialog to choose a custom save location.
+Configure app preferences: toggle the completion sound on/off, switch between
+themes, and export tasks to CSV or JSON. The **Export** button saves to the
+default exports folder, while **Export to** opens a file dialog to choose a
+custom save location.
 
 ![Settings Screen](src/todo_tui/assets/Settings%20Screen%20(Screenshot).png)
 
@@ -50,7 +70,7 @@ Displays all keybindings and usage instructions for the app, including fuzzy sea
 
 ## Architecture
 
-```
+```text
 todo-tui/
 ├── .github/
 │   └── workflows/
@@ -71,7 +91,8 @@ todo-tui/
 │       └── main.py                  # Application entry point and all screen definitions
 ├── tests/
 │   └── test_benchmark.py
-├── pyproject.toml                   # Project metadata and build configuration (uv)
+├── pyproject.toml                   # Project metadata and build
+│                                   # configuration (uv)
 ├── todo_tui.spec                    # PyInstaller spec for building Windows exe
 ├── uv.lock                          # Lock file for uv package manager
 ├── .gitignore
@@ -81,7 +102,7 @@ todo-tui/
 
 ### Application Flow
 
-```
+```text
 Welcome Screen
       │
       ▼  (Click "Get Started" or press Enter)
@@ -101,21 +122,22 @@ Welcome Screen
 
 ### Screens Overview
 
-| Screen           | Description |
-|------------------|-------------|
-| **Welcome**      | Landing page with the app title and **Get Started** button |
-| **Todo**         | Main task management interface with Available / Completed panels, input bar, and fuzzy search |
-| **Settings**     | Configure app preferences (toggle completion sound, switch theme, export tasks to CSV/JSON with custom save location) |
-| **Help**         | Displays all keybindings and usage instructions (markdown) |
-| **Quit**         | Modal dialog asking "Are you sure you want to quit?" |
-| **Delete**       | Modal dialog asking "Are you sure you want to delete this task?" |
-| **Delete All** | Modal dialog with task checkboxes, Select All, and Delete/Cancel buttons |
+| Screen           | Description
+|------------------|-------------
+| **Welcome**      | Landing page with the app title and **Get Started** button
+| **Todo**         | Main task management interface with Available / Completed panels
+| **Settings**     | Configure app preferences (sound, theme, export tasks)
+| **Help**         | Displays all keybindings and usage instructions (markdown)
+| **Quit**         | Modal dialog asking "Are you sure you want to quit?"
+| **Delete**       | Modal dialog asking "Are you sure you want to delete this task?"
+| **Delete All**   | Multi-select modal (Select All) with Delete/Cancel
 
 ### Database Schema
 
 The app uses SQLite with two tables:
 
 **TASKS table** — stores all todo items:
+
 ```sql
 CREATE TABLE TASKS(
     ID          INTEGER PRIMARY KEY,
@@ -127,6 +149,7 @@ CREATE TABLE TASKS(
 ```
 
 **SETTINGS table** — stores user preferences (key-value pairs, e.g. `sound_enabled`):
+
 ```sql
 CREATE TABLE SETTINGS(
     KEY   TEXT PRIMARY KEY,
@@ -137,38 +160,41 @@ CREATE TABLE SETTINGS(
 ### Tech Stack
 
 - **[Python](https://python.org)** – Core programming language
-- **[Textual](https://textual.textualize.io)** – Python framework for building Terminal User Interfaces
+- **[Textual](https://textual.textualize.io)** – Python framework for building
+  Terminal User Interfaces
 - **[SQLite](https://sqlite.org)** – Lightweight, embedded database for task persistence
-- **[uv](https://github.com/astral-sh/uv)** – Fast Python package manager and project manager
-- **[winsound](https://docs.python.org/3/library/winsound.html)** – Windows native sound API for task completion audio feedback
+- **[uv](https://github.com/astral-sh/uv)** – Fast Python package manager and
+  project manager
+- **[winsound](https://docs.python.org/3/library/winsound.html)** – Windows
+  native sound API for task completion audio feedback
 
 ## Keybindings
 
-| Key                  | Action                                      |
-|----------------------|---------------------------------------------|
-| `q`                  | Quit the app (with confirmation)            |
-| `h`                  | Go to Welcome / Home screen                 |
-| `s`                  | Open Settings screen                        |
-| `?`                  | Show help screen                            |
-| `Esc`                | Go back / dismiss current screen            |
-| `Delete`             | Delete the focused task (with confirmation) |
-| `Ctrl+d`             | Delete All — multi-select modal             |
-| `Ctrl+f`             | Open fuzzy search bar to filter tasks       |
-| `Tab` / `Shift+Tab`  | Move focus between widgets                  |
-| `Enter`              | Add a task from the input box               |
-| `Space`              | Check / Uncheck a task checkbox             |
+| Key                  | Action
+|----------------------|---------------------------------------------
+| `q`                  | Quit the app (with confirmation)
+| `h`                  | Go to Welcome / Home screen
+| `s`                  | Open Settings screen
+| `?`                  | Show help screen
+| `Esc`                | Go back / dismiss current screen
+| `Delete`             | Delete the focused task (with confirmation)
+| `Ctrl+d`             | Delete All — multi-select modal
+| `Ctrl+f`             | Open fuzzy search bar to filter tasks
+| `Tab` / `Shift+Tab`  | Move focus between widgets
+| `Enter`              | Add a task from the input box
+| `Space`              | Check / Uncheck a task checkbox
 
 ## Benchmarks
 
 Benchmarked using `pytest-benchmark` on Python 3.14.3 (Windows):
 
-| Operation          | Mean       | OPS           |
-|--------------------|------------|---------------|
-| Update Task        | 1.32 μs    | 759,224 ops/s |
-| Delete Task        | 1.51 μs    | 663,480 ops/s |
-| Insert Task        | 1.78 μs    | 561,485 ops/s |
-| Select All Tasks   | 17.56 μs   | 56,935 ops/s  |
-| Select Available   | 21.20 μs   | 47,170 ops/s  |
+| Operation          | Mean       | OPS
+|--------------------|------------|---------------
+| Update Task        | 1.32 μs    | 759,224 ops/s
+| Delete Task        | 1.51 μs    | 663,480 ops/s
+| Insert Task        | 1.78 μs    | 561,485 ops/s
+| Select All Tasks   | 17.56 μs   | 56,935 ops/s
+| Select Available   | 21.20 μs   | 47,170 ops/s
 
 > All database operations complete in **under 22 microseconds** on average.
 
@@ -238,7 +264,8 @@ uv run todo-tui
 2. Click **Get Started** on the Welcome screen
 3. Type a task in the input box to add it
 4. Navigate checkboxes and toggle task completion
-5. Remove individual tasks with **Delete** (confirmation required) or Delete All with **Ctrl+d**
+5. Remove individual tasks with **Delete** (confirmation required) or Delete All
+   with **Ctrl+d**
 6. Filter tasks with **Ctrl+f** using fuzzy search; press **Esc** to clear
 7. Open Settings to adjust preferences and export tasks
 8. View the help screen anytime for keybindings
@@ -251,4 +278,5 @@ uv run todo-tui
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the
+[LICENSE](LICENSE) file for details.
